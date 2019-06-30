@@ -21,13 +21,13 @@ class Player
     "#{@name} #{@player_bank}"
   end
 
-  private
-
   def hand_value
     ranks = []
     @hand.each { |card| ranks << card[VALUE_PATTERN] }
     values_sum(ranks)
   end
+
+  private
 
   def values_sum(ranks)
     sum = 0
@@ -44,5 +44,6 @@ class Player
                10
              end
     end
+    sum
   end
 end
