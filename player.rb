@@ -1,13 +1,48 @@
 class Player
+  VALUE_PATTERN = /^\S+/.freeze
+  NUMERIC_PATTERN = /^\d+/.freeze
 
   attr_reader :name
 
   def initialize(name)
     @name = name
+    @hand = []
   end
 
   def starting_bank
-    Bank.new(@name)
+    @player_bank = Bank.new(@name)
   end
 
+  def take_cards(deck, value)
+    value.times { @hand << deck.give_card } if value.class == Integer
+  end
+
+  def to_s
+    "#{@name} #{@player_bank}"
+  end
+
+  private
+
+  def hand_value
+    ranks = []
+    @hand.each { |card| ranks << card[VALUE_PATTERN] }
+    values_sum(ranks)
+  end
+
+  def values_sum(ranks)
+    sum = 0
+    ranks.each do |rank|
+      sum += if rank =~ NUMERIC_PATTERN
+               rank.to_i
+             elsif rank == 'A'
+               if sum <= 10
+                 11
+               else
+                 1
+               end
+             else
+               10
+             end
+    end
+  end
 end
