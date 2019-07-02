@@ -2,7 +2,7 @@ class Player
   VALUE_PATTERN = /^\S+/.freeze
   NUMERIC_PATTERN = /^\d+/.freeze
 
-  attr_reader :name
+  attr_reader :name, :player_bank
 
   def initialize(name)
     @name = name
@@ -18,7 +18,7 @@ class Player
   end
 
   def to_s
-    "#{@name} #{@player_bank}"
+    "#{@name} #{@hand}"
   end
 
   def hand_value
