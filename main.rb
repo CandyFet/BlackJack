@@ -45,6 +45,8 @@ class Main
     deck = Deck.new
     @player.take_cards(deck, 2)
     @dealer.take_cards(deck, 2)
+    @player.player_bank.make_bet
+    @player.player_bank.make_bet
     table_interface(@player, @dealer)
     turn(deck)
     round_end_view
@@ -83,10 +85,14 @@ class Main
   def round_result
     if (@player.hand_value > 21 && @dealer.hand_value > 21) || (@player.hand_value == @dealer.hand_value)
       'Ничья'
+      @dealer.player_bank.win_bet(10)
+      @player.player_bank.win_bet(10)
     elsif @dealer.hand_value > @player.hand_value && @dealer.hand_value <= 21
       @dealer.name
+      @dealer.player_bank.win_bet(20)
     else
       @player.name
+      @player.player_bank.win_bet(20)
     end
   end
 
