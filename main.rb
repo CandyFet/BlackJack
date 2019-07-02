@@ -45,6 +45,11 @@ class Main
     @player.take_cards(deck, 2)
     @dealer.take_cards(deck, 2)
     table_interface(@player, @dealer)
+    turn(deck)
+    round_result
+    new_round_invite if @player.player_bank > 10
+    round_menu if user_answer
+    abort
   end
 
   def user_answer
@@ -56,5 +61,35 @@ class Main
     puts dealer.to_s.center(TABLE_SPACE)
     8.times(puts(TABLE_SPACE))
     puts player.to_s.center(TABLE_SPACE)
+  end
+
+  def turn_view
+    puts 'Взять еще карту?'
+    puts 'Напишите Да/Нет'
+    user_answer
+  end
+
+  def turn(deck)
+    @player.take_cards(deck, 1) if turn_view
+    @dealer.mastermind(deck)
+  end
+
+  def round_end_view
+    puts 'Раздача закончена, победитель:'
+    puts round_result.to_s
+  end
+
+  def round_result
+    if @player.hand_value > @dealer.hand_value && @player.hand_value <= 21
+      @player.name
+    elsif @dealer.hand_value > @player.hand_value && @dealer.hand_value <= 21
+      @dealer.name
+    else
+      'Ничья'
+    end
+  end
+
+  def new_round_invite
+    puts 'Сыграть еще раз?'
   end
 end
