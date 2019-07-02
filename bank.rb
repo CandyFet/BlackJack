@@ -4,11 +4,11 @@ class Bank
   attr_reader :amount
 
   def initialize(user)
-    @amount = { user.to_sym => 100 } || {}
+    @amount = 100
   end
 
   def make_bet(user)
-    @amount[user.to_sym] -= 10 if @amount[user.to_sym] >= 10
+    @amount -= 10 if @amount >= 10
   end
 
 end

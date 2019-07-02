@@ -14,6 +14,7 @@ class Main
       @dealer = Dealer.new
       @dealer.starting_bank
       @player.starting_bank
+      round_menu
     else
       abort
     end
@@ -46,7 +47,7 @@ class Main
     @dealer.take_cards(deck, 2)
     table_interface(@player, @dealer)
     turn(deck)
-    round_result
+    round_end_view
     new_round_invite if @player.player_bank > 10
     round_menu if user_answer
     abort
@@ -58,9 +59,9 @@ class Main
   end
 
   def table_interface(player, dealer)
-    puts dealer.to_s.center(TABLE_SPACE)
-    8.times(puts(TABLE_SPACE))
-    puts player.to_s.center(TABLE_SPACE)
+    puts dealer.to_s.center(20)
+    8.times { puts TABLE_SPACE }
+    puts player.to_s.center(20)
   end
 
   def turn_view
@@ -80,12 +81,12 @@ class Main
   end
 
   def round_result
-    if @player.hand_value > @dealer.hand_value && @player.hand_value <= 21
-      @player.name
+    if (@player.hand_value > 21 && @dealer.hand_value > 21) || (@player.hand_value == @dealer.hand_value)
+      'Ничья'
     elsif @dealer.hand_value > @player.hand_value && @dealer.hand_value <= 21
       @dealer.name
     else
-      'Ничья'
+      @player.name
     end
   end
 
@@ -93,3 +94,5 @@ class Main
     puts 'Сыграть еще раз?'
   end
 end
+
+Main.new.init_game

@@ -2,10 +2,11 @@ class Dealer < Player
 
   def initialize
     @name = 'Dealer'
+    @hand = []
   end
 
   def to_s
-    "#{@name} #{@hand.size*'*'}"
+    "#{@name} #{'*' * @hand.size}"
   end
 
   def mastermind(deck)
