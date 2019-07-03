@@ -1,18 +1,21 @@
 # frozen_string_literal: true
 
 class Bank
+
   attr_reader :amount
 
-  def initialize()
+  def initialize
     @amount = 100
   end
 
-  def make_bet
-    @amount -= 10 if @amount >= 10
+  def debit(value)
+    @amount += value
+    value
   end
 
-  def win_bet(value)
-    @amount += value
+  def withdraw(value)
+    @amount -= value
+    value
   end
 
 end

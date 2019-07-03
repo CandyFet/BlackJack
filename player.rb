@@ -2,7 +2,7 @@ class Player
   VALUE_PATTERN = /^\S+/.freeze
   NUMERIC_PATTERN = /^\d+/.freeze
 
-  attr_reader :name, :player_bank
+  attr_reader :name, :bank
 
   def initialize(name)
     @name = name
@@ -10,7 +10,7 @@ class Player
   end
 
   def starting_bank
-    @player_bank = Bank.new(@name)
+    @bank = Bank.new
   end
 
   def take_cards(deck, value)
