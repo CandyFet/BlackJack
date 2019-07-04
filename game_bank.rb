@@ -11,10 +11,10 @@ class GameBank < Bank
   end
 
   def reward_winner(winner)
-    winner.debit(20)
+    winner.bank.debit(20)
   end
 
   def refund(*players)
-    players.each { |player| player.debit(10) }
+    players.each { |player| player.bank.debit(10) }
   end
 end

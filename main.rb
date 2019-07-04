@@ -1,104 +1,64 @@
 # frozen_string_literal: true
-
+require_relative 'card'
 require_relative 'player'
 require_relative 'dealer'
+require_relative 'hand'
 require_relative 'deck'
 require_relative 'bank'
+require_relative 'game_bank'
+require_relative 'interface'
 
 class Main
-  TABLE_SPACE = ' ' * 20
-
   def init_game
-    if start_menu
-      start_greeting
+    @interface = Interface.new
+    if @interface.start_menu
+      @interface.start_greeting(self)
       @dealer = Dealer.new
-      @dealer.starting_bank
-      @player.starting_bank
-      round_menu
+      @game_bank = GameBank.new
+      @interface.round_menu(self)
     else
       abort
     end
-  end
-
-  def start_greeting
-    puts 'Приветсвуем в игре BlackJack,
-      пожалуйста, представьтесь'
-    player_creation(gets.chomp!.capitalize)
   end
 
   def player_creation(name)
     @player = Player.new(name)
   end
 
-  def start_menu
-    puts "Чтобы начать игру напишите 'Да'"
-    user_answer
-  end
-
-  def round_menu
-    puts "Напишите 'Да' чтобы раздать карты"
-    start_round if user_answer
-    start_menu
-  end
-
   def start_round
     deck = Deck.new
-    @player.take_cards(deck, 2)
-    @dealer.take_cards(deck, 2)
-    @player.bank.make_bet
-    @player.bank.make_bet
-    table_interface(@player, @dealer)
+    @player.hand.cards.clear
+    @dealer.hand.cards.clear
+    2.times { @player.hand.add_card(deck.give_card) }
+    2.times { @dealer.hand.add_card(deck.give_card) }
+    @game_bank.make_bets(@player, @dealer)
+    @interface.table_interface(@player, @dealer)
     turn(deck)
-    round_end_view
-    new_round_invite if @player.bank > 10
-    round_menu if user_answer
+    @interface.round_end_view(self)
+    @interface.new_round_invite if @player.bank.amount > 10
+    @interface.round_menu(self) if @interface.user_answer
     abort
   end
 
-  def user_answer
-    answer = gets.chomp!.capitalize
-    answer == 'Да'
-  end
-
-  def table_interface(player, dealer)
-    puts dealer.to_s.center(20)
-    8.times { puts TABLE_SPACE }
-    puts player.to_s.center(20)
-  end
-
-  def turn_view
-    puts 'Взять еще карту?'
-    puts 'Напишите Да/Нет'
-    user_answer
-  end
-
   def turn(deck)
-    @player.take_cards(deck, 1) if turn_view
+    @player.hand.add_card(deck.give_card) if @interface.turn_view
     @dealer.mastermind(deck)
   end
 
-  def round_end_view
-    puts 'Раздача закончена, победитель:'
-    puts round_result.to_s
-  end
-
   def round_result
-    if (@player.hand_value > 21 && @dealer.hand_value > 21) || (@player.hand_value == @dealer.hand_value)
+
+    if (@player.hand.value > 21 && @dealer.hand.value > 21) || (@player.hand.value == @dealer.hand.value)
+      @game_bank.refund(@player, @dealer)
       'Ничья'
-      @dealer.bank.win_bet(10)
-      @player.bank.win_bet(10)
-    elsif @dealer.hand_value > @player.hand_value && @dealer.hand_value <= 21
+    elsif @dealer.hand.value > @player.hand.value && @dealer.hand.value <= 21
+      @game_bank.reward_winner(@dealer)
       @dealer.name
-      @dealer.bank.win_bet(20)
     else
+      @game_bank.reward_winner(@player)
       @player.name
-      @player.bank.win_bet(20)
     end
   end
 
-  def new_round_invite
-    puts 'Сыграть еще раз?'
-  end
 end
 
 Main.new.init_game

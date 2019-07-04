@@ -2,15 +2,16 @@ class Dealer < Player
 
   def initialize
     @name = 'Dealer'
-    @hand = []
+    @hand = Hand.new
+    @bank = Bank.new
   end
 
   def to_s
-    "#{@name} #{'*' * @hand.size}"
+    "#{@name} #{'*' * @hand.cards.size}"
   end
 
   def mastermind(deck)
-    take_cards(deck, 1) if hand_value < 17
+    @hand.add_card(deck.give_card)
   end
 
 end
