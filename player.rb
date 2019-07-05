@@ -12,4 +12,16 @@ class Player
   def to_s
     "#{@name} #{@hand}"
   end
+
+  def add_card(card)
+    @hand.add_card(card)
+  end
+
+  def debit(amount)
+    @bank.debit(amount)
+  end
+
+  def withdraw(amount)
+    @bank.withdraw(amount)
+  end
 end

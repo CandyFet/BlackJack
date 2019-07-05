@@ -19,12 +19,16 @@ class Hand
   def value
     value = 0
     @cards.each do |card|
-      value += if card.rank == 'A' && value > 10
+      value += if card.ace? && value > 10
                  1
                else
                  card.value
                end
     end
     value
+  end
+
+  def clear
+    cards.clear
   end
 end

@@ -11,7 +11,7 @@ class Dealer < Player
   end
 
   def mastermind(deck)
-    @hand.add_card(deck.give_card)
+    add_card(deck.give_card) if @hand.value < GameConfig::DEALER_MAX_POINTS
   end
 
 end

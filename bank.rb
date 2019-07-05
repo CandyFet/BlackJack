@@ -4,18 +4,16 @@ class Bank
 
   attr_reader :amount
 
-  def initialize
-    @amount = 100
+  def initialize(amount = 100)
+    @amount = amount
   end
 
   def debit(value)
     @amount += value
-    value
   end
 
   def withdraw(value)
-    @amount -= value
-    value
+    @amount -= value if @amount > value
   end
 
 end
