@@ -18,6 +18,10 @@ class Card
     "#{rank} #{suit}"
   end
 
+  def ace?
+    rank == 'A'
+  end
+
   private
 
   def determine_value
@@ -30,7 +34,4 @@ class Card
     end
   end
 
-  def ace?
-    rank == 'A'
-  end
 end

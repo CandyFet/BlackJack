@@ -12,21 +12,22 @@ require_relative 'interface'
 
 class Main
   def init_game
-    if Interface.start_menu
+    @interface = Interface.new
+    if @interface.start_menu
       @player = player_creation
       @dealer = Dealer.new
-      @game_bank = GameBank.new
-      start_round if Interface.round_menu
+      @game_bank = GameBank.new(0)
+      start_round if @interface.round_menu
     else
       abort
     end
   end
 
   def player_creation
-    name = Interface.start_greeting
+    name = @interface.start_greeting
     Player.new(name)
   rescue ArgumentError => e
-    Interface.show_error_message(e)
+    @interface.show_error_message(e)
   end
 
   def start_round
@@ -36,23 +37,16 @@ class Main
     2.times { @player.add_card(deck.give_card) }
     2.times { @dealer.add_card(deck.give_card) }
     @game_bank.make_bets(@player, @dealer)
-    Interface.table_interface(@player.to_s, @dealer.to_s)
-    case Interface.select_action
+    @interface.table_interface(@player.to_s, @dealer.to_s)
+    case @interface.select_action
     when 1 then @dealer.mastermind(deck)
     when 2 then @player.add_card(deck.give_card)
-    when 3 then
-      @dealer.mastermind(deck)
+    when 3 then @dealer.mastermind(deck)
     end
-    turn(deck)
-    Interface.round_end_view(round_result)
-    Interface.new_round_invite if @player.bank.amount > 10
-    Interface.round_menu if Interface.user_answer
+    @interface.round_end_view(round_result)
+    @interface.new_round_invite if @player.bank.amount > 10
+    start_round if @interface.user_answer
     abort
-  end
-
-  def turn(deck)
-    @player.hand.add_card(deck.give_card) if Interface.turn_view
-    @dealer.mastermind(deck)
   end
 
   def round_result

@@ -12,7 +12,7 @@ class Hand
 
   def to_s
     appearance = ''
-    @cards.each { |card| appearance += card.to_s + " " }
+    @cards.each { |card| appearance += card.to_s + ' ' }
     appearance
   end
 

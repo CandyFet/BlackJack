@@ -1,5 +1,6 @@
-module Interface
+# frozen_string_literal: true
 
+class Interface
   TABLE_SPACE = ' ' * 20
 
   def user_answer
@@ -13,23 +14,15 @@ module Interface
     puts player.center(20)
   end
 
-  def turn_view
-    puts 'Взять еще карту?'
-    puts 'Напишите Да/Нет'
-    user_answer
-  end
-
   def round_end_view(winner)
     puts "Раздача закончена, победитель: #{winner}"
   end
-
 
   def start_greeting
     puts 'Приветсвуем в игре BlackJack,
       пожалуйста, представьтесь'
     gets.chomp!.capitalize
   end
-
 
   def start_menu
     puts "Чтобы начать игру напишите 'Да'"
@@ -40,7 +33,6 @@ module Interface
     puts "Напишите 'Да' чтобы раздать карты"
     user_answer
   end
-
 
   def new_round_invite
     puts 'Сыграть еще раз?'
