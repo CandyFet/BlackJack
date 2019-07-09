@@ -3,9 +3,9 @@
 class Interface
   TABLE_SPACE = ' ' * 20
 
-  def user_answer
-    answer = gets.chomp!.capitalize
-    answer == 'Да'
+  def user_agreed?
+    answer = gets.to_i
+    answer == 1
   end
 
   def table_interface(player, dealer)
@@ -25,17 +25,17 @@ class Interface
   end
 
   def start_menu
-    puts "Чтобы начать игру напишите 'Да'"
-    user_answer
+    puts "Чтобы начать игру напишите '1'"
+    user_agreed?
   end
 
   def round_menu
-    puts "Напишите 'Да' чтобы раздать карты"
-    user_answer
+    puts "Напишите '1' чтобы раздать карты"
+    user_agreed?
   end
 
   def new_round_invite
-    puts 'Сыграть еще раз?'
+    puts 'Чтобы сыграть еще раз напишите 1'
   end
 
   def show_error_message(error)

@@ -24,4 +24,16 @@ class Player
   def withdraw(amount)
     @bank.withdraw(amount)
   end
+
+  def points
+    @hand.value
+  end
+
+  def money
+    bank.amount
+  end
+
+  def cards_amount
+    @hand.cards.size
+  end
 end

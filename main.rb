@@ -31,40 +31,65 @@ class Main
   end
 
   def start_round
-    deck = Deck.new
-    @player.hand.clear
-    @dealer.hand.clear
-    2.times { @player.add_card(deck.give_card) }
-    2.times { @dealer.add_card(deck.give_card) }
-    @game_bank.make_bets(@player, @dealer)
-    @interface.table_interface(@player.to_s, @dealer.to_s)
-    case @interface.select_action
-    when 1 then @dealer.mastermind(deck)
-    when 2 then @player.add_card(deck.give_card)
-    when 3 then @dealer.mastermind(deck)
+    loop do
+      reset_state
+      deal_cards
+      @game_bank.make_bets(@player, @dealer)
+      @interface.table_interface(@player.to_s, @dealer.to_s)
+      while (@player.cards_amount < 3) && (@dealer.cards_amount < 3)
+        case @interface.select_action
+        when 1 then @dealer.can_take_card?(@deck.give_card)
+        when 2 then
+          @player.add_card(@deck.give_card)
+          @dealer.can_take_card?(@deck.give_card)
+        when 3 then @dealer.can_take_card?(@deck.give_card)
+        end
+      end
+      @interface.round_end_view(round_result)
+      @interface.new_round_invite
+      if @interface.user_agreed?
+        start_round
+      else
+        abort
+      end
+      break if @player.money < 10 || @dealer.money < 10
     end
-    @interface.round_end_view(round_result)
-    @interface.new_round_invite if @player.bank.amount > 10
-    start_round if @interface.user_answer
-    abort
   end
 
   def round_result
-    if (win_condition(@player) && win_condition(@dealer)) || (@player.hand.value == @dealer.hand.value)
+    winner = determine_winner
+    if winner.nil?
       @game_bank.refund(@player, @dealer)
       'Ничья'
-    elsif (@dealer.hand.value > @player.hand.value) && (@dealer.hand.value <= GameConfig::BJ)
-      @game_bank.reward_winner(@dealer)
-      @dealer.name
     else
-      @game_bank.reward_winner(@player)
-      @player.name
+      @game_bank.reward_winner(winner)
+      winner.name
     end
   end
 
-  def win_condition(player)
-    true if player.hand.value <= GameConfig::BJ
-    false
+  def reset_state
+    @deck = Deck.new
+    @player.hand.clear
+    @dealer.hand.clear
+  end
+
+  def deal_cards
+    2.times { @player.add_card(@deck.give_card) }
+    2.times { @dealer.add_card(@deck.give_card) }
+  end
+
+  def determine_winner
+    if (@player.points > GameConfig::BJ) && (@dealer.points > GameConfig::BJ)
+      nil
+    elsif @player.points == @dealer.points
+      nil
+    elsif @player.points > GameConfig::BJ
+      @dealer
+    elsif @dealer.points > GameConfig::BJ
+      @player
+    else
+      @dealer.points > @player.points ? @dealer : @player
+    end
   end
 end
 
