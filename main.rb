@@ -11,10 +11,19 @@ require_relative 'game_bank'
 require_relative 'interface'
 
 class Main
+
+  def initialize
+    @interface = Interface.new
+    @player = create_player
+    @dealer = Dealer.new
+    @game_bank = GameBank.new(0)
+    play_game
+  end
+
   def init_game
     @interface = Interface.new
     if @interface.start_menu
-      @player = player_creation
+      @player = create_player
       @dealer = Dealer.new
       @game_bank = GameBank.new(0)
       start_round if @interface.round_menu
@@ -23,7 +32,7 @@ class Main
     end
   end
 
-  def player_creation
+  def create_player
     name = @interface.start_greeting
     Player.new(name)
   rescue ArgumentError => e
@@ -38,19 +47,20 @@ class Main
       @interface.table_interface(@player.to_s, @dealer.to_s)
       while (@player.cards_amount < 3) && (@dealer.cards_amount < 3)
         case @interface.select_action
-        when 1 then @dealer.can_take_card?(@deck.give_card)
+        when 1 then @dealer.add_card(@deck.give_card) if @dealer.can_take_card?
         when 2 then
           @player.add_card(@deck.give_card)
-          @dealer.can_take_card?(@deck.give_card)
-        when 3 then @dealer.can_take_card?(@deck.give_card)
+          @dealer.add_card(@deck.give_card) if @dealer.can_take_card?
+        when 3 then @dealer.add_card(@deck.give_card) if @dealer.can_take_card?
         end
       end
-      @interface.round_end_view(round_result)
+      @interface.round_end_view
+      round_result
       @interface.new_round_invite
       if @interface.user_agreed?
         start_round
       else
-        abort
+        break
       end
       break if @player.money < 10 || @dealer.money < 10
     end
@@ -60,10 +70,10 @@ class Main
     winner = determine_winner
     if winner.nil?
       @game_bank.refund(@player, @dealer)
-      'Ничья'
+      @interface.show_draw
     else
       @game_bank.reward_winner(winner)
-      winner.name
+      @interface.show_winner(winner)
     end
   end
 

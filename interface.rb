@@ -14,8 +14,8 @@ class Interface
     puts player.center(20)
   end
 
-  def round_end_view(winner)
-    puts "Раздача закончена, победитель: #{winner}"
+  def round_end_view
+    puts 'Раздача закончена, победитель: '
   end
 
   def start_greeting
@@ -47,5 +47,13 @@ class Interface
     puts '2 - взять карту'
     puts '3 - открыть карты'
     gets.to_i
+  end
+
+  def show_draw
+    'Ничья'
+  end
+
+  def show_winner(winner)
+    "Победил #{winner.name}"
   end
 end

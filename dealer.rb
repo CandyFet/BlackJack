@@ -10,8 +10,8 @@ class Dealer < Player
     "#{@name} #{'*' * @hand.cards.size}"
   end
 
-  def can_take_card?(card)
-    add_card(card) if points < GameConfig::DEALER_MAX_POINTS
+  def can_take_card?()
+    true if points < GameConfig::DEALER_MAX_POINTS
   end
 
 end
