@@ -36,4 +36,8 @@ class Player
   def cards_amount
     @hand.cards.size
   end
+
+  def can_take_card?
+    true if cards_amount < 3
+  end
 end

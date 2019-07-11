@@ -56,4 +56,9 @@ class Interface
   def show_winner(winner)
     "Победил #{winner.name}"
   end
+
+  def continue_game?
+    new_round_invite
+    user_agreed?
+  end
 end
