@@ -17,15 +17,13 @@ class Hand
   end
 
   def value
-    value = 0
-    @cards.each do |card|
-      value += if card.ace? && value > 10
-                 1
-               else
-                 card.value
-               end
-    end
+    value = cards.map(&:value).sum
+    value -= 10 if ace_in_hand? && value > GameConfig::BJ
     value
+  end
+
+  def ace_in_hand?
+    cards.any?(&:ace?)
   end
 
   def clear

@@ -9,9 +9,9 @@ class Interface
   end
 
   def table_interface(player, dealer)
-    puts dealer.center(20)
+    puts dealer.to_s.center(20)
     8.times { puts TABLE_SPACE }
-    puts player.center(20)
+    puts player.to_s.center(20)
   end
 
   def round_end_view
@@ -50,11 +50,11 @@ class Interface
   end
 
   def show_draw
-    'Ничья'
+    puts 'Ничья'
   end
 
   def show_winner(winner)
-    "Победил #{winner.name}"
+    puts "Победил #{winner.name}"
   end
 
   def continue_game?

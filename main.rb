@@ -19,18 +19,6 @@ class Main
     play_game
   end
 
-  def init_game
-    @interface = Interface.new
-    if @interface.start_menu
-      @player = create_player
-      @dealer = Dealer.new
-      @game_bank = GameBank.new(0)
-      play_game if @interface.round_menu
-    else
-      abort
-    end
-  end
-
   def create_player
     name = @interface.start_greeting
     Player.new(name)
@@ -40,10 +28,14 @@ class Main
 
   def player_turn(action)
     case action
-    when 1 then @dealer.add_card(@deck.give_card) if @dealer.can_take_card?
+    when 1 then nil
     when 2 then @player.add_card(@deck.give_card) if @player.can_take_card?
-    when 3 then @dealer.add_card(@deck.give_card) if @dealer.can_take_card?
+    when 3 then nil
     end
+  end
+
+  def dealer_turn
+    @dealer.add_card(@deck.give_card) if @dealer.can_take_card?
   end
 
   def round_result
@@ -69,17 +61,12 @@ class Main
   end
 
   def determine_winner
-    if (@player.points > GameConfig::BJ) && (@dealer.points > GameConfig::BJ)
-      nil
-    elsif @player.points == @dealer.points
-      nil
-    elsif @player.points > GameConfig::BJ
-      @dealer
-    elsif @dealer.points > GameConfig::BJ
-      @player
-    else
-      @dealer.points > @player.points ? @dealer : @player
-    end
+    return if (@player.points > GameConfig::BJ) && (@dealer.points > GameConfig::BJ)
+    return if @player.points == @dealer.points
+    return @dealer if @player.points > GameConfig::BJ
+    return @player if @dealer.points > GameConfig::BJ
+
+    [@dealer, @player].max_by(&:points)
   end
 
   def play_game
@@ -88,6 +75,7 @@ class Main
 
       reset_state
       deal_cards
+      @interface.table_interface(@player, @dealer)
       play_round
       round_result
       break unless @interface.continue_game?
@@ -99,13 +87,13 @@ class Main
       action = @interface.select_action
       player_turn(action)
       dealer_turn
-      break if !@player.can_take_card? && !@dealer.can_take_card?
+      break if !@player.can_take_card? && !@dealer.can_take_card? || player_turn(action).nil?
     end
   end
 
   def players_can_make_bets?
-    true if @player.money > 10 && @dealer.money > 10
+    true if @player.money > GameConfig::BET_SIZE && @dealer.money > GameConfig::BET_SIZE
   end
 end
 
-Main.new.init_game
+Main.new

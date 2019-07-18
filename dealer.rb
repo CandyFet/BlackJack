@@ -11,6 +11,6 @@ class Dealer < Player
   end
 
   def can_take_card?
-    true if points < GameConfig::DEALER_MAX_POINTS && cards_amount < 3
+    true if points < GameConfig::DEALER_MAX_POINTS && cards_amount < GameConfig::PLAYER_MAX_CARDS
   end
 end

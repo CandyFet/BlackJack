@@ -38,6 +38,6 @@ class Player
   end
 
   def can_take_card?
-    true if cards_amount < 3
+    true if cards_amount < GameConfig::PLAYER_MAX_CARDS
   end
 end
