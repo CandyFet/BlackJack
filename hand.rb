@@ -18,7 +18,7 @@ class Hand
 
   def value
     value = cards.map(&:value).sum
-    value -= 10 if ace_in_hand? && value > GameConfig::BJ
+    value -= GameConfig::BET_SIZE if ace_in_hand? && value > GameConfig::BJ
     value
   end
 

@@ -11,6 +11,12 @@ require_relative 'game_bank'
 require_relative 'interface'
 
 class Main
+  PLAYER_ACTIONS = {
+    skip: 1,
+    take_card: 2,
+    open_cards: 3
+  }.freeze
+
   def initialize
     @interface = Interface.new
     @player = create_player
@@ -26,11 +32,16 @@ class Main
     @interface.show_error_message(e)
   end
 
+  def deal_cards
+    2.times { @player.add_card(@deck.give_card) }
+    2.times { @dealer.add_card(@deck.give_card) }
+  end
+
   def player_turn(action)
-    case action
-    when 1 then nil
-    when 2 then @player.add_card(@deck.give_card) if @player.can_take_card?
-    when 3 then nil
+    if action == PLAYER_ACTIONS[:take_card]
+      return unless @player.can_take_card?
+
+      @player.add_card(@deck.give_card)
     end
   end
 
@@ -49,32 +60,13 @@ class Main
     end
   end
 
-  def reset_state
-    @deck = Deck.new
-    @player.hand.clear
-    @dealer.hand.clear
-  end
-
-  def deal_cards
-    2.times { @player.add_card(@deck.give_card) }
-    2.times { @dealer.add_card(@deck.give_card) }
-  end
-
-  def determine_winner
-    return if (@player.points > GameConfig::BJ) && (@dealer.points > GameConfig::BJ)
-    return if @player.points == @dealer.points
-    return @dealer if @player.points > GameConfig::BJ
-    return @player if @dealer.points > GameConfig::BJ
-
-    [@dealer, @player].max_by(&:points)
-  end
-
   def play_game
     loop do
       break unless players_can_make_bets?
 
       reset_state
       deal_cards
+      @game_bank.make_bets(@player, @dealer)
       @interface.table_interface(@player, @dealer)
       play_round
       round_result
@@ -86,13 +78,32 @@ class Main
     loop do
       action = @interface.select_action
       player_turn(action)
+      break if action != PLAYER_ACTIONS[:take_card]
+
       dealer_turn
-      break if !@player.can_take_card? && !@dealer.can_take_card? || player_turn(action).nil?
+      break if !@player.can_take_card? && !@dealer.can_take_card?
     end
   end
 
+  private
+
   def players_can_make_bets?
     true if @player.money > GameConfig::BET_SIZE && @dealer.money > GameConfig::BET_SIZE
+  end
+
+  def determine_winner
+    return if (@player.points > GameConfig::BJ) && (@dealer.points > GameConfig::BJ)
+    return if @player.points == @dealer.points
+    return @dealer if @player.points > GameConfig::BJ
+    return @player if @dealer.points > GameConfig::BJ
+
+    [@dealer, @player].max_by(&:points)
+  end
+
+  def reset_state
+    @deck = Deck.new
+    @player.hand.clear
+    @dealer.hand.clear
   end
 end
 
