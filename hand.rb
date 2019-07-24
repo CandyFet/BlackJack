@@ -18,12 +18,20 @@ class Hand
 
   def value
     value = cards.map(&:value).sum
-    value -= GameConfig::BET_SIZE if ace_in_hand? && value > GameConfig::BJ
+    if ace_in_hand?
+      aces_in_hand.times { value -= GameConfig::FACE_VALUE if value > GameConfig::BJ }
+    end
     value
   end
 
   def ace_in_hand?
     cards.any?(&:ace?)
+  end
+
+  def aces_in_hand
+    amount = 0
+    @cards.each { |card| amount += 1 if card.ace? }
+    amount
   end
 
   def clear

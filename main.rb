@@ -11,6 +11,7 @@ require_relative 'game_bank'
 require_relative 'interface'
 
 class Main
+
   PLAYER_ACTIONS = {
     skip: 1,
     take_card: 2,
@@ -33,8 +34,8 @@ class Main
   end
 
   def deal_cards
-    2.times { @player.add_card(@deck.give_card) }
-    2.times { @dealer.add_card(@deck.give_card) }
+    GameConfig::START_CARDS.times { @player.add_card(@deck.give_card) }
+    GameConfig::START_CARDS.times { @dealer.add_card(@deck.give_card) }
   end
 
   def player_turn(action)
@@ -78,7 +79,7 @@ class Main
     loop do
       action = @interface.select_action
       player_turn(action)
-      break if action != PLAYER_ACTIONS[:take_card]
+      break if action == PLAYER_ACTIONS[:open_cards]
 
       dealer_turn
       break if !@player.can_take_card? && !@dealer.can_take_card?
@@ -88,7 +89,7 @@ class Main
   private
 
   def players_can_make_bets?
-    true if @player.money > GameConfig::BET_SIZE && @dealer.money > GameConfig::BET_SIZE
+    @player.money >= GameConfig::BET_SIZE && @dealer.money >= GameConfig::BET_SIZE
   end
 
   def determine_winner
